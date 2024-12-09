@@ -102,14 +102,19 @@ const Compass = () => {
     };
   }, []);
 
+  // Calculate the relative angle between compass heading and Qibla direction
+  const relativeQiblaAngle = qiblaAngle !== null && heading !== null
+    ? qiblaAngle - heading
+    : 0;
+
   const compassStyle = {
-    transform: `rotate(${heading !== null ? -heading : 0}deg)`,
-    transition: 'transform 0.5s ease-out'
+    transform: `rotate(${heading !== null ? heading : 0}deg)`,
+    transition: 'transform 0.1s ease-out' // Faster transition for smoother movement
   };
 
   const qiblaStyle = {
-    transform: `rotate(${qiblaAngle || 0}deg)`,
-    transition: 'transform 0.5s ease-out'
+    transform: `rotate(${relativeQiblaAngle}deg)`,
+    transition: 'transform 0.1s ease-out'
   };
 
   if (error) {
@@ -137,7 +142,7 @@ const Compass = () => {
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl font-bold">E</div>
         </div>
         
-        {/* Qibla indicator with arrow - now pointing from center outward */}
+        {/* Qibla indicator with arrow */}
         <div className="absolute top-1/2 left-1/2" style={qiblaStyle}>
           <div className="absolute -translate-x-1/2 -translate-y-1/2">
             <div className="flex flex-col items-center">
