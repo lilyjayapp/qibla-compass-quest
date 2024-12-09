@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/components/ui/use-toast";
+import { ArrowBigUp } from "lucide-react";
 
 const Compass = () => {
   const [heading, setHeading] = useState<number | null>(null);
@@ -136,11 +137,13 @@ const Compass = () => {
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl font-bold">E</div>
         </div>
         
-        {/* Qibla indicator */}
+        {/* Qibla indicator with arrow */}
         <div className="absolute top-1/2 left-1/2" style={qiblaStyle}>
           <div className="absolute -translate-x-1/2 -translate-y-1/2">
-            <div className="w-4 h-40 bg-green-600 rounded-full" />
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-green-600 rounded-full" />
+            <div className="flex flex-col items-center">
+              <ArrowBigUp className="w-12 h-12 text-green-600" />
+              <div className="w-2 h-32 bg-green-600 -mt-1" />
+            </div>
           </div>
         </div>
       </div>
