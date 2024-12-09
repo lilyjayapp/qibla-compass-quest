@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowBigUp } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 
 const MECCA_COORDS = {
@@ -107,7 +107,7 @@ const Compass = () => {
         <div className="relative w-full h-full" style={compassStyle}>
           {/* North indicator */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-            <ArrowUp className="w-12 h-12 text-green-600 -mt-2 stroke-[4]" />
+            <ArrowBigUp className="w-16 h-16 text-green-600 -mt-2 stroke-[4]" />
             <span className="text-lg font-bold mt-1">N</span>
           </div>
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-lg font-bold">S</div>
@@ -117,8 +117,8 @@ const Compass = () => {
         {/* Qibla direction indicator */}
         <div className="absolute top-1/2 left-1/2" style={qiblaStyle}>
           <div className="absolute -translate-x-1/2 -translate-y-1/2">
-            <div className="w-3 h-32 bg-green-600 rounded-full" />
-            <ArrowUp className="w-16 h-16 text-green-600 absolute -top-14 left-1/2 -translate-x-1/2 stroke-[4]" />
+            <div className="w-4 h-36 bg-green-600 rounded-full" />
+            <ArrowBigUp className="w-20 h-20 text-green-600 absolute -top-16 left-1/2 -translate-x-1/2 stroke-[4]" />
           </div>
         </div>
       </div>
