@@ -29,8 +29,9 @@ const Compass = () => {
     const requestPermissions = async () => {
       try {
         // Handle iOS
-        if (typeof window.DeviceOrientationEvent?.requestPermission === 'function') {
-          const permission = await window.DeviceOrientationEvent.requestPermission();
+        const requestPermissionFn = window.DeviceOrientationEvent.requestPermission;
+        if (typeof requestPermissionFn === 'function') {
+          const permission = await requestPermissionFn();
           setHasPermission(permission === 'granted');
           if (permission === 'granted') {
             toast({

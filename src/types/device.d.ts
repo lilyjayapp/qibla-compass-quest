@@ -6,14 +6,14 @@ interface DeviceOrientationEvent extends Event {
   absolute: boolean;
 }
 
-interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
-  requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
+interface DeviceOrientationEventConstructor {
+  new(type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
 }
 
 declare global {
   interface Window {
-    DeviceOrientationEvent: {
+    DeviceOrientationEvent: DeviceOrientationEventConstructor & {
       requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
-    } & DeviceOrientationEventConstructor;
+    };
   }
 }
