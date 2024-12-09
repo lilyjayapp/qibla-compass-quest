@@ -8,7 +8,7 @@ interface DeviceOrientationEvent extends Event {
 
 interface DeviceOrientationEventConstructor {
   new(type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
-  requestPermission?: () => Promise<'granted' | 'denied' | 'default'>;
+  requestPermission?(): Promise<'granted' | 'denied' | 'default'>;
 }
 
 declare global {

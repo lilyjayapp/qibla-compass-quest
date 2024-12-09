@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Compass as CompassIcon, ArrowUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 
 const MECCA_COORDS = {
@@ -7,17 +7,17 @@ const MECCA_COORDS = {
   longitude: 39.8262,
 };
 
-  const calculateQiblaDirection = (userLat: number, userLong: number) => {
-    const φ1 = userLat * (Math.PI / 180);
-    const φ2 = MECCA_COORDS.latitude * (Math.PI / 180);
-    const Δλ = (MECCA_COORDS.longitude - userLong) * (Math.PI / 180);
+const calculateQiblaDirection = (userLat: number, userLong: number) => {
+  const φ1 = userLat * (Math.PI / 180);
+  const φ2 = MECCA_COORDS.latitude * (Math.PI / 180);
+  const Δλ = (MECCA_COORDS.longitude - userLong) * (Math.PI / 180);
 
-    const y = Math.sin(Δλ);
-    const x = Math.cos(φ1) * Math.tan(φ2) - Math.sin(φ1) * Math.cos(Δλ);
-    let qibla = Math.atan2(y, x) * (180 / Math.PI);
-    
-    return (qibla + 360) % 360;
-  };
+  const y = Math.sin(Δλ);
+  const x = Math.cos(φ1) * Math.tan(φ2) - Math.sin(φ1) * Math.cos(Δλ);
+  let qibla = Math.atan2(y, x) * (180 / Math.PI);
+  
+  return (qibla + 360) % 360;
+};
 
 const Compass = () => {
   const [heading, setHeading] = useState<number>(0);
@@ -28,10 +28,8 @@ const Compass = () => {
   useEffect(() => {
     const requestPermissions = async () => {
       try {
-        // Handle iOS
-        const requestPermissionFn = window.DeviceOrientationEvent.requestPermission;
-        if (typeof requestPermissionFn === 'function') {
-          const permission = await requestPermissionFn();
+        if (typeof (window.DeviceOrientationEvent as any).requestPermission === 'function') {
+          const permission = await (window.DeviceOrientationEvent as any).requestPermission();
           setHasPermission(permission === 'granted');
           if (permission === 'granted') {
             toast({
@@ -40,7 +38,6 @@ const Compass = () => {
             });
           }
         } else {
-          // Handle Android (no permission needed)
           setHasPermission(true);
         }
       } catch (error) {
@@ -76,23 +73,19 @@ const Compass = () => {
     getLocation();
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      console.log('Orientation event:', event.alpha, event.webkitCompassHeading);
-      
       if (event.webkitCompassHeading) {
-        // iOS
         setHeading(event.webkitCompassHeading);
       } else if (event.alpha !== null) {
-        // Android
         setHeading(360 - event.alpha);
       }
     };
 
     if (hasPermission) {
-      window.addEventListener('deviceorientation', handleOrientation as EventListener, true);
+      window.addEventListener('deviceorientation', handleOrientation, true);
     }
 
     return () => {
-      window.removeEventListener('deviceorientation', handleOrientation as EventListener, true);
+      window.removeEventListener('deviceorientation', handleOrientation, true);
     };
   }, [hasPermission, toast]);
 
