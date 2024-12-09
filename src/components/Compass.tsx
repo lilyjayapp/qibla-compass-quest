@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Compass as CompassIcon } from 'lucide-react';
+import { Compass as CompassIcon, ArrowUp } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 
 const MECCA_COORDS = {
@@ -110,16 +110,20 @@ const Compass = () => {
     <div className="relative w-full max-w-sm mx-auto h-[400px] flex items-center justify-center">
       <div className="absolute w-72 h-72 rounded-full border-4 border-green-600 bg-white/90 shadow-lg">
         <div className="relative w-full h-full" style={compassStyle}>
-          <CompassIcon className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-green-600" />
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-sm font-semibold">N</div>
+          {/* North indicator */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
+            <ArrowUp className="w-8 h-8 text-green-600 -mt-1" />
+            <span className="text-sm font-semibold mt-1">N</span>
+          </div>
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-semibold">S</div>
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold">W</div>
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold">E</div>
         </div>
-        <div 
-          className="absolute top-1/2 left-1/2 w-1 h-24 bg-green-500 -translate-x-1/2 -translate-y-1/2 origin-bottom"
-          style={qiblaStyle}
-        />
+        {/* Qibla direction indicator */}
+        <div className="absolute top-1/2 left-1/2 flex flex-col items-center" style={qiblaStyle}>
+          <div className="w-1 h-24 bg-green-500 -translate-x-1/2 -translate-y-1/2 origin-bottom" />
+          <ArrowUp className="w-8 h-8 text-green-600 absolute -top-8 left-1/2 -translate-x-1/2" />
+        </div>
       </div>
       <div className="absolute bottom-0 text-center">
         <p className="text-lg font-semibold text-green-600">
