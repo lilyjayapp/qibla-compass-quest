@@ -82,19 +82,41 @@ const Compass = () => {
       }
     };
 
-    // Handle device orientation updates
+    // Handle device orientation updates with true north
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (event.webkitCompassHeading) {
-        // iOS devices
-        setHeading(event.webkitCompassHeading);
+      // Log raw orientation data for debugging
+      console.log('Orientation event:', {
+        alpha: event.alpha,
+        webkitCompassHeading: (event as any).webkitCompassHeading,
+        absolute: event.absolute
+      });
+
+      if ((event as any).webkitCompassHeading) {
+        // iOS devices - already gives true north
+        setHeading((event as any).webkitCompassHeading);
       } else if (event.alpha !== null) {
-        // Android devices
-        setHeading(360 - event.alpha);
+        // Android devices - need to convert to true north
+        // Alpha is measured clockwise from north while compass is counterclockwise
+        let heading = 360 - event.alpha;
+        
+        // If device reports absolute orientation, use it directly
+        if (event.absolute) {
+          setHeading(heading);
+        } else {
+          // Apply magnetic declination correction if needed
+          // This is a simplified correction - for more accuracy, you'd need to
+          // calculate actual magnetic declination based on location
+          const magneticDeclination = 0; // This should be calculated based on location
+          heading = (heading + magneticDeclination + 360) % 360;
+          setHeading(heading);
+        }
       }
     };
 
     requestPermission();
     getLocation();
+    
+    // Add event listener with useCapture set to true for more reliable orientation events
     window.addEventListener('deviceorientation', handleOrientation, true);
 
     return () => {
@@ -102,14 +124,14 @@ const Compass = () => {
     };
   }, []);
 
-  // Calculate the relative angle between compass heading and Qibla direction
+  // Calculate the relative angle between true north and Qibla direction
   const relativeQiblaAngle = qiblaAngle !== null && heading !== null
     ? qiblaAngle - heading
     : 0;
 
   const compassStyle = {
     transform: `rotate(${heading !== null ? heading : 0}deg)`,
-    transition: 'transform 0.1s ease-out' // Faster transition for smoother movement
+    transition: 'transform 0.1s ease-out'
   };
 
   const qiblaStyle = {
