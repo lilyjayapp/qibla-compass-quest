@@ -53,6 +53,7 @@ const Compass = () => {
     const getLocation = () => {
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition((position) => {
+          console.log('Got location:', position.coords);
           const direction = calculateQiblaDirection(
             position.coords.latitude,
             position.coords.longitude
@@ -63,7 +64,7 @@ const Compass = () => {
           toast({
             variant: "destructive",
             title: "Location error",
-            description: "Unable to get your location",
+            description: "Unable to get your location. Please enable location services.",
           });
         });
       }
@@ -73,6 +74,7 @@ const Compass = () => {
     getLocation();
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
+      console.log('Orientation event:', event.alpha, event.webkitCompassHeading);
       if (event.webkitCompassHeading) {
         setHeading(event.webkitCompassHeading);
       } else if (event.alpha !== null) {
@@ -105,17 +107,19 @@ const Compass = () => {
         <div className="relative w-full h-full" style={compassStyle}>
           {/* North indicator */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-            <ArrowUp className="w-10 h-10 text-green-600 -mt-2 stroke-[3]" />
-            <span className="text-base font-bold mt-1">N</span>
+            <ArrowUp className="w-12 h-12 text-green-600 -mt-2 stroke-[4]" />
+            <span className="text-lg font-bold mt-1">N</span>
           </div>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-base font-bold">S</div>
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold">W</div>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-base font-bold">E</div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-lg font-bold">S</div>
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold">W</div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-bold">E</div>
         </div>
         {/* Qibla direction indicator */}
-        <div className="absolute top-1/2 left-1/2 flex flex-col items-center" style={qiblaStyle}>
-          <div className="w-2 h-28 bg-green-500 -translate-x-1/2 -translate-y-1/2 origin-bottom" />
-          <ArrowUp className="w-12 h-12 text-green-600 absolute -top-10 left-1/2 -translate-x-1/2 stroke-[3]" />
+        <div className="absolute top-1/2 left-1/2" style={qiblaStyle}>
+          <div className="absolute -translate-x-1/2 -translate-y-1/2">
+            <div className="w-3 h-32 bg-green-600 rounded-full" />
+            <ArrowUp className="w-16 h-16 text-green-600 absolute -top-14 left-1/2 -translate-x-1/2 stroke-[4]" />
+          </div>
         </div>
       </div>
       <div className="absolute bottom-0 text-center">
