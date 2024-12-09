@@ -1,23 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowBigUp } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
-
-const MECCA_COORDS = {
-  latitude: 21.4225,
-  longitude: 39.8262,
-};
-
-const calculateQiblaDirection = (userLat: number, userLong: number) => {
-  const φ1 = userLat * (Math.PI / 180);
-  const φ2 = MECCA_COORDS.latitude * (Math.PI / 180);
-  const Δλ = (MECCA_COORDS.longitude - userLong) * (Math.PI / 180);
-
-  const y = Math.sin(Δλ);
-  const x = Math.cos(φ1) * Math.tan(φ2) - Math.sin(φ1) * Math.cos(Δλ);
-  let qibla = Math.atan2(y, x) * (180 / Math.PI);
-  
-  return (qibla + 360) % 360;
-};
+import { Qibla, Coordinates } from 'adhan';
 
 const Compass = () => {
   const [heading, setHeading] = useState<number>(0);
@@ -54,17 +38,24 @@ const Compass = () => {
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition((position) => {
           console.log('Got location:', position.coords);
-          const direction = calculateQiblaDirection(
+          const coordinates = new Coordinates(
             position.coords.latitude,
             position.coords.longitude
           );
-          setQiblaDirection(direction);
+          const qibla = Qibla(coordinates);
+          console.log('Qibla direction:', qibla);
+          setQiblaDirection(qibla);
+          
+          toast({
+            title: "Location found",
+            description: "Qibla direction calculated successfully",
+          });
         }, (error) => {
-          console.error('Error getting location:', error);
+          console.error('Location error:', error);
           toast({
             variant: "destructive",
             title: "Location error",
-            description: "Unable to get your location. Please enable location services.",
+            description: "Please enable location services to find Qibla direction",
           });
         });
       }
@@ -103,34 +94,34 @@ const Compass = () => {
 
   return (
     <div className="relative w-full max-w-sm mx-auto h-[400px] flex items-center justify-center">
-      <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full border-8 border-green-600 bg-white/90 shadow-lg">
+      <div className="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full border-8 border-green-600 bg-white/90 shadow-lg">
         <div className="relative w-full h-full" style={compassStyle}>
           {/* North indicator */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-            <ArrowBigUp className="w-16 h-16 text-green-600 -mt-2 stroke-[4]" />
-            <span className="text-lg font-bold mt-1">N</span>
+            <ArrowBigUp className="w-24 h-24 text-green-600 -mt-4 stroke-[4]" />
+            <span className="text-2xl font-bold mt-1">N</span>
           </div>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-lg font-bold">S</div>
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold">W</div>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-bold">E</div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-2xl font-bold">S</div>
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold">W</div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl font-bold">E</div>
         </div>
         {/* Qibla direction indicator */}
         <div className="absolute top-1/2 left-1/2" style={qiblaStyle}>
           <div className="absolute -translate-x-1/2 -translate-y-1/2">
-            <div className="w-4 h-36 bg-green-600 rounded-full" />
-            <ArrowBigUp className="w-20 h-20 text-green-600 absolute -top-16 left-1/2 -translate-x-1/2 stroke-[4]" />
+            <div className="w-6 h-48 bg-green-600 rounded-full" />
+            <ArrowBigUp className="w-32 h-32 text-green-600 absolute -top-24 left-1/2 -translate-x-1/2 stroke-[4]" />
           </div>
         </div>
       </div>
       <div className="absolute bottom-0 text-center">
-        <p className="text-lg font-semibold text-green-600">
+        <p className="text-xl font-semibold text-green-600">
           Qibla Direction: {Math.round(qiblaDirection)}°
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="text-lg text-gray-600">
           Compass Heading: {Math.round(heading)}°
         </p>
         {!hasPermission && (
-          <p className="text-sm text-red-500 mt-2">
+          <p className="text-lg text-red-500 mt-2">
             Please enable device orientation access
           </p>
         )}
