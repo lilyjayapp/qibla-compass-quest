@@ -137,12 +137,12 @@ const Compass = () => {
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl font-bold">E</div>
         </div>
         
-        {/* Qibla indicator with arrow */}
+        {/* Qibla indicator with arrow - now pointing from center outward */}
         <div className="absolute top-1/2 left-1/2" style={qiblaStyle}>
           <div className="absolute -translate-x-1/2 -translate-y-1/2">
             <div className="flex flex-col items-center">
-              <ArrowBigUp className="w-12 h-12 text-green-600" />
-              <div className="w-2 h-32 bg-green-600 -mt-1" />
+              <div className="w-2 h-32 bg-green-600" />
+              <ArrowBigUp className="w-12 h-12 text-green-600 rotate-180 -mt-1" />
             </div>
           </div>
         </div>
