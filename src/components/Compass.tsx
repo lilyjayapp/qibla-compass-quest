@@ -7,12 +7,6 @@ const MECCA_COORDS = {
   longitude: 39.8262,
 };
 
-const Compass = () => {
-  const [heading, setHeading] = useState<number>(0);
-  const [qiblaDirection, setQiblaDirection] = useState<number>(0);
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const { toast } = useToast();
-
   const calculateQiblaDirection = (userLat: number, userLong: number) => {
     const φ1 = userLat * (Math.PI / 180);
     const φ2 = MECCA_COORDS.latitude * (Math.PI / 180);
@@ -24,6 +18,12 @@ const Compass = () => {
     
     return (qibla + 360) % 360;
   };
+
+const Compass = () => {
+  const [heading, setHeading] = useState<number>(0);
+  const [qiblaDirection, setQiblaDirection] = useState<number>(0);
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -108,21 +108,21 @@ const Compass = () => {
 
   return (
     <div className="relative w-full max-w-sm mx-auto h-[400px] flex items-center justify-center">
-      <div className="absolute w-72 h-72 rounded-full border-4 border-green-600 bg-white/90 shadow-lg">
+      <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full border-8 border-green-600 bg-white/90 shadow-lg">
         <div className="relative w-full h-full" style={compassStyle}>
           {/* North indicator */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
-            <ArrowUp className="w-8 h-8 text-green-600 -mt-1" />
-            <span className="text-sm font-semibold mt-1">N</span>
+            <ArrowUp className="w-10 h-10 text-green-600 -mt-2 stroke-[3]" />
+            <span className="text-base font-bold mt-1">N</span>
           </div>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm font-semibold">S</div>
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold">W</div>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold">E</div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-base font-bold">S</div>
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold">W</div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-base font-bold">E</div>
         </div>
         {/* Qibla direction indicator */}
         <div className="absolute top-1/2 left-1/2 flex flex-col items-center" style={qiblaStyle}>
-          <div className="w-1 h-24 bg-green-500 -translate-x-1/2 -translate-y-1/2 origin-bottom" />
-          <ArrowUp className="w-8 h-8 text-green-600 absolute -top-8 left-1/2 -translate-x-1/2" />
+          <div className="w-2 h-28 bg-green-500 -translate-x-1/2 -translate-y-1/2 origin-bottom" />
+          <ArrowUp className="w-12 h-12 text-green-600 absolute -top-10 left-1/2 -translate-x-1/2 stroke-[3]" />
         </div>
       </div>
       <div className="absolute bottom-0 text-center">
