@@ -7,6 +7,7 @@ const Compass = () => {
   const [qiblaAngle, setQiblaAngle] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Calculate Qibla angle using simple spherical trigonometry
   const calculateQibla = (lat: number, lng: number) => {
     // Mecca coordinates
     const meccaLat = 21.4225;
@@ -28,15 +29,13 @@ const Compass = () => {
   };
 
   useEffect(() => {
-    let orientationPermissionGranted = false;
-
+    // Request device orientation permission
     const requestPermission = async () => {
       try {
         if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
           const permission = await (DeviceOrientationEvent as any).requestPermission();
           if (permission === 'granted') {
-            orientationPermissionGranted = true;
-            console.log('Orientation permission granted');
+            console.log('Device orientation permission granted');
             toast({
               title: "Permission granted",
               description: "Compass is now active"
@@ -49,9 +48,6 @@ const Compass = () => {
               description: "Please allow compass access to use this feature"
             });
           }
-        } else {
-          // For devices that don't require permission
-          orientationPermissionGranted = true;
         }
       } catch (err) {
         console.error('Error requesting permission:', err);
@@ -59,16 +55,18 @@ const Compass = () => {
       }
     };
 
+    // Get user location and calculate Qibla
     const getLocation = () => {
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            console.log('Location obtained:', position.coords);
             const qibla = calculateQibla(position.coords.latitude, position.coords.longitude);
+            console.log('Calculated Qibla angle:', qibla);
             setQiblaAngle(qibla);
-            console.log('Location and Qibla calculated:', { 
-              lat: position.coords.latitude, 
-              lng: position.coords.longitude, 
-              qibla 
+            toast({
+              title: "Location found",
+              description: "Qibla direction calculated"
             });
           },
           (err) => {
@@ -84,73 +82,39 @@ const Compass = () => {
       }
     };
 
+    // Handle device orientation updates
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (!orientationPermissionGranted) return;
-
-      console.log('Raw orientation data:', {
-        alpha: event.alpha,
-        beta: event.beta,
-        gamma: event.gamma,
-        absolute: event.absolute,
-        webkitCompassHeading: (event as any).webkitCompassHeading
-      });
-
-      // Handle iOS devices
-      if (typeof (event as any).webkitCompassHeading === 'number') {
-        const iOSHeading = (event as any).webkitCompassHeading;
-        console.log('iOS heading:', iOSHeading);
-        setHeading(iOSHeading);
-        return;
-      }
-
-      // Handle Android devices
-      if (event.alpha !== null) {
-        // Convert alpha angle to compass heading
-        // Alpha returns degrees from north going clockwise
-        // We need to convert it to counter-clockwise for compass display
-        let androidHeading = 360 - event.alpha;
-        
-        if (!event.absolute) {
-          // If the device doesn't provide absolute readings,
-          // we need to do additional calculations
-          const rotation = window.screen.orientation?.angle || 0;
-          androidHeading = (androidHeading + rotation) % 360;
-        }
-
-        console.log('Android heading:', androidHeading);
-        setHeading(androidHeading);
+      if (event.webkitCompassHeading) {
+        // iOS devices
+        setHeading(event.webkitCompassHeading);
+      } else if (event.alpha !== null) {
+        // Android devices
+        setHeading(360 - event.alpha);
       }
     };
 
-    // Initialize compass
     requestPermission();
     getLocation();
-
-    // Add event listeners with high frequency updates
-    window.addEventListener('deviceorientation', handleOrientation, { capture: true });
-    window.addEventListener('orientationchange', () => {
-      console.log('Orientation changed:', window.screen.orientation?.angle);
-    });
+    window.addEventListener('deviceorientation', handleOrientation, true);
 
     return () => {
-      window.removeEventListener('deviceorientation', handleOrientation);
-      window.removeEventListener('orientationchange', () => {});
+      window.removeEventListener('deviceorientation', handleOrientation, true);
     };
   }, []);
 
-  // Calculate relative angle between true north and Qibla
+  // Calculate the relative angle between compass heading and Qibla direction
   const relativeQiblaAngle = qiblaAngle !== null && heading !== null
-    ? (qiblaAngle - heading + 360) % 360
+    ? qiblaAngle - heading
     : 0;
 
   const compassStyle = {
     transform: `rotate(${heading !== null ? heading : 0}deg)`,
-    transition: 'transform 0.05s linear' // Faster, smoother transitions
+    transition: 'transform 0.1s ease-out' // Faster transition for smoother movement
   };
 
   const qiblaStyle = {
     transform: `rotate(${relativeQiblaAngle}deg)`,
-    transition: 'transform 0.05s linear'
+    transition: 'transform 0.1s ease-out'
   };
 
   if (error) {
